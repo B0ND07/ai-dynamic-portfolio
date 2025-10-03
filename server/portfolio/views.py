@@ -3,13 +3,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
+from .models import Project, Skill
 from .serializers import (
     UserRegistrationSerializer,
     UserLoginSerializer,
     ProjectSerializer,
+    SkillSerializer,
 )
-
-from .models import Project
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -67,4 +67,18 @@ class ProjectListView(APIView):
     def get(self, request):
         projects = Project.objects.order_by('-created_at')
         serializer = ProjectSerializer(projects, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class SkillListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        skills = Skill.objects.all()
+        
+        # Order by proficiency (descending) by default
+        order = request.query_params.get('order', '-proficiency')
+        skills = skills.order_by(order, 'name')
+        
+        serializer = SkillSerializer(skills, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

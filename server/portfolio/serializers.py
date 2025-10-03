@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from .models import Project
+from .models import Project, Skill
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -41,10 +41,26 @@ class ProjectSerializer(serializers.ModelSerializer):
             'id',
             'title',
             'description',
+            'image_url',
             'technologies',
-            'github_link',
-            'live_link',
-            'image',
+            'live_url',
+            'github_url',
+            'featured',
+            'status',
+            'views',
             'created_at',
             'updated_at',
         )
+        read_only_fields = ('id', 'views', 'created_at', 'updated_at')
+
+
+class SkillSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Skill
+        fields = ('id', 'name', 'category', 'proficiency', 'created_at')
+        read_only_fields = ('id', 'created_at')
+    
+    def validate_proficiency(self, value):
+        if value < 0 or value > 100:
+            raise serializers.ValidationError("Proficiency must be between 0 and 100")
+        return value
