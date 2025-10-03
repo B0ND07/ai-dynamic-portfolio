@@ -1,11 +1,19 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserRegistrationSerializer, UserLoginSerializer
+from .serializers import (
+    UserRegistrationSerializer,
+    UserLoginSerializer,
+    ProjectSerializer,
+)
+
+from .models import Project
 
 class RegisterView(APIView):
+    permission_classes = [AllowAny]
+    
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -18,6 +26,7 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -50,3 +59,12 @@ class ProfileView(APIView):
             'username': user.username,
             'email': user.email
         }, status=status.HTTP_200_OK)
+
+
+class ProjectListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        projects = Project.objects.order_by('-created_at')
+        serializer = ProjectSerializer(projects, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
