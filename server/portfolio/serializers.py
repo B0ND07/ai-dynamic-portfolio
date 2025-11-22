@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from .models import Project, Skill
+from .models import Project, Skill, Profile, ContactMessage
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -64,3 +64,51 @@ class SkillSerializer(serializers.ModelSerializer):
         if value < 0 or value > 100:
             raise serializers.ValidationError("Proficiency must be between 0 and 100")
         return value
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+    
+    class Meta:
+        model = Profile
+        fields = (
+            'id',
+            'username',
+            'user_email',
+            'full_name',
+            'bio',
+            'avatar_url',
+            'github_url',
+            'linkedin_url',
+            'email',
+            'created_at',
+            'updated_at',
+            'title',
+            'phone',
+            'location',
+            'website_url',
+            'twitter_url',
+            'cv_url',
+            'years_experience',
+            'current_company',
+            'current_position',
+            'education',
+            'certifications',
+            'footer_description',
+            'services_list',
+            'quick_links',
+            'copyright_text',
+            'footer_social_github',
+            'footer_social_linkedin',
+            'footer_social_email',
+        )
+        read_only_fields = ('id', 'created_at', 'updated_at')
+
+
+class ContactMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactMessage
+        fields = ('id', 'name', 'email', 'subject', 'message', 'read', 'created_at')
+        read_only_fields = ('id', 'read', 'created_at')
+

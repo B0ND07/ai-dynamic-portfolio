@@ -56,3 +56,59 @@ class Skill(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.category} - {self.proficiency}%)"
+
+
+class Profile(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    full_name = models.TextField(blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
+    avatar_url = models.TextField(blank=True, null=True)
+    github_url = models.TextField(blank=True, null=True)
+    linkedin_url = models.TextField(blank=True, null=True)
+    email = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    title = models.TextField(blank=True, null=True)
+    phone = models.TextField(blank=True, null=True)
+    location = models.TextField(blank=True, null=True)
+    website_url = models.TextField(blank=True, null=True)
+    twitter_url = models.TextField(blank=True, null=True)
+    cv_url = models.TextField(blank=True, null=True)
+    years_experience = models.TextField(blank=True, null=True)
+    current_company = models.TextField(blank=True, null=True)
+    current_position = models.TextField(blank=True, null=True)
+    education = models.TextField(blank=True, null=True)
+    certifications = models.TextField(blank=True, null=True)
+    footer_description = models.TextField(blank=True, null=True)
+    services_list = models.TextField(blank=True, null=True)
+    quick_links = models.TextField(blank=True, null=True)
+    copyright_text = models.TextField(blank=True, null=True)
+    footer_social_github = models.TextField(blank=True, null=True)
+    footer_social_linkedin = models.TextField(blank=True, null=True)
+    footer_social_email = models.TextField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'profiles'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.full_name or self.user.username} - Profile"
+
+
+class ContactMessage(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.TextField()
+    email = models.TextField()
+    subject = models.TextField()
+    message = models.TextField()
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'contact_messages'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.name} - {self.subject}"
+

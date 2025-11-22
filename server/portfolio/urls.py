@@ -6,6 +6,7 @@ from .views import (
     ProfileView, 
     ProjectListView,
     SkillListView,
+    ContactMessageView,
 )
 
 urlpatterns = [
@@ -20,4 +21,7 @@ urlpatterns = [
     
     # Skill endpoints
     path('skills/', SkillListView.as_view(), name='skill-list'),
+    
+    # Contact endpoints
+    path('contact/', ContactMessageView.as_view(), name='contact'),
 ]
