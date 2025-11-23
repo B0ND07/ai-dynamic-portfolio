@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,7 +45,7 @@ const Navigation = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden md:flex space-x-8 items-center">
             {navItems.map((item) => (
               <a
                 key={item.name}
@@ -62,6 +63,7 @@ const Navigation = () => {
                 {item.name}
               </a>
             ))}
+            <ThemeToggle />
             {isAuthenticated && (
               <Link to="/admin">
                 <Button variant="outline" size="sm">
@@ -103,14 +105,17 @@ const Navigation = () => {
                 {item.name}
               </a>
             ))}
-            {isAuthenticated && (
-              <Link to="/admin" onClick={() => setIsOpen(false)}>
-                <Button variant="outline" size="sm" className="mt-2">
-                  <User className="w-4 h-4 mr-2" />
-                  Admin
-                </Button>
-              </Link>
-            )}
+            <div className="flex items-center gap-2 px-3 py-2">
+              <ThemeToggle />
+              {isAuthenticated && (
+                <Link to="/admin" onClick={() => setIsOpen(false)}>
+                  <Button variant="outline" size="sm">
+                    <User className="w-4 h-4 mr-2" />
+                    Admin
+                  </Button>
+                </Link>
+              )}
+            </div>
           </div>
         )}
       </div>
