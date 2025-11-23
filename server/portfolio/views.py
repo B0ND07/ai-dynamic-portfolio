@@ -64,17 +64,35 @@ class ProfileView(APIView):
     permission_classes = [AllowAny]
     
     def get(self, request):
-        user = request.user
+        # user = request.user
+        
+        # If user is authenticated, return their profile
+        # if user.is_authenticated:
+        #     try:
+        #         profile = Profile.objects.get(user=user)
+        #         serializer = ProfileSerializer(profile)
+        #         return Response(serializer.data, status=status.HTTP_200_OK)
+        #     except Profile.DoesNotExist:
+        #         return Response({
+        #             'username': user.username,
+        #             'email': user.email,
+        #             'message': 'Profile not found. Please create a profile.'
+        #         }, status=status.HTTP_404_NOT_FOUND)
+        
+        # If not authenticated, return the first profile (for portfolio display)
         try:
-            profile = Profile.objects.get(user=user)
-            serializer = ProfileSerializer(profile)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Profile.DoesNotExist:
+            profile = Profile.objects.first()
+            if profile:
+                serializer = ProfileSerializer(profile)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({
+                    'message': 'No profile found. Please register and create a profile.'
+                }, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
             return Response({
-                'username': user.username,
-                'email': user.email,
-                'message': 'Profile not found. Please create a profile.'
-            }, status=status.HTTP_404_NOT_FOUND)
+                'error': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     def put(self, request):
         if not request.user.is_authenticated:
