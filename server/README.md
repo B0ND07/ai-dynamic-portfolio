@@ -31,6 +31,13 @@ A Django-based portfolio application with admin panel and authentication.
    python manage.py runserver
    ```
 
+## Change User Password
+
+To change a user's password (password validators are disabled for development):
+```bash
+python manage.py changepassword <username>
+```
+
 ## Features
 - User authentication
 - Project management
