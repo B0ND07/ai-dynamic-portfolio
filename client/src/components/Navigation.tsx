@@ -65,7 +65,7 @@ const Navigation = () => {
             ))}
             <ThemeToggle />
             {isAuthenticated && (
-              <Link to="/admin">
+              <Link to="/admin" target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" size="sm">
                   <User className="w-4 h-4 mr-2" />
                   Admin

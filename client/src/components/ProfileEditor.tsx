@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import ProfileBasicInfo from "./ProfileBasicInfo";
 import ProfileSocialLinks from "./ProfileSocialLinks";
 import ProfileProfessionalInfo from "./ProfileProfessionalInfo";
+import ProfileFooterSettings from "./ProfileFooterSettings";
 import { authService } from "@/lib/api";
 
 interface ProfileEditorProps {
@@ -31,6 +32,13 @@ interface ProfileFormData {
   current_position: string;
   education: string;
   certifications: string;
+  footer_description: string;
+  services_list: string;
+  quick_links: string;
+  copyright_text: string;
+  footer_social_github: string;
+  footer_social_linkedin: string;
+  footer_social_email: string;
 }
 
 const initialFormData: ProfileFormData = {
@@ -51,6 +59,13 @@ const initialFormData: ProfileFormData = {
   current_position: "",
   education: "",
   certifications: "",
+  footer_description: "",
+  services_list: "",
+  quick_links: "",
+  copyright_text: "",
+  footer_social_github: "",
+  footer_social_linkedin: "",
+  footer_social_email: "",
 };
 
 const ProfileEditor = ({ onClose, onSuccess }: ProfileEditorProps) => {
@@ -96,6 +111,13 @@ const ProfileEditor = ({ onClose, onSuccess }: ProfileEditorProps) => {
         current_position: data.current_position || "",
         education: data.education || "",
         certifications: data.certifications || "",
+        footer_description: data.footer_description || "",
+        services_list: data.services_list || "",
+        quick_links: data.quick_links || "",
+        copyright_text: data.copyright_text || "",
+        footer_social_github: data.footer_social_github || "",
+        footer_social_linkedin: data.footer_social_linkedin || "",
+        footer_social_email: data.footer_social_email || "",
       });
     } catch (error) {
       console.error("Error fetching profile:", error);
@@ -183,6 +205,10 @@ const ProfileEditor = ({ onClose, onSuccess }: ProfileEditorProps) => {
             handleCvChange={handleCvChange}
           />
           <ProfileProfessionalInfo
+            formData={formData}
+            handleChange={handleChange}
+          />
+          <ProfileFooterSettings
             formData={formData}
             handleChange={handleChange}
           />

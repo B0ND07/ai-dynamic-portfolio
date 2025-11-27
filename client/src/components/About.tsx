@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { Code, Palette, Zap } from "lucide-react";
+import { Code, Palette, Zap, MapPin, Phone, Award, Briefcase, GraduationCap, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { skillService, authService } from "@/lib/api";
 
@@ -18,6 +18,9 @@ interface ProfileData {
   current_company: string;
   current_position: string;
   education: string;
+  certifications: string;
+  location: string;
+  phone: string;
 }
 
 const defaultSkills = [
@@ -117,9 +120,25 @@ const About = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">About Me</h2>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-4xl xl:max-w-6xl mx-auto text-justify">
             {aboutText}
           </p>
+          {(profileData?.location || profileData?.phone) && (
+            <div className="flex flex-wrap justify-center gap-4 mt-6 text-muted-foreground">
+              {profileData?.location && (
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  <span>{profileData.location}</span>
+                </div>
+              )}
+              {profileData?.phone && (
+                <div className="flex items-center gap-2">
+                  <Phone className="w-4 h-4" />
+                  <span>{profileData.phone}</span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
@@ -148,14 +167,64 @@ const About = () => {
           ))}
         </div>
 
-        {/* <div className="text-center">
-          <div className="max-w-4xl mx-auto">
-            <h3 className="text-2xl font-semibold mb-6">My Journey</h3>
-            <p className="text-muted-foreground leading-relaxed">
-              {journeyText}
-            </p>
+        {/* Professional Information */}
+        {(profileData?.current_position || profileData?.current_company || profileData?.years_experience || profileData?.education) && (
+          <div className="mb-16">
+            <h3 className="text-2xl font-semibold mb-8 text-center">Professional Background</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {profileData?.current_position && (
+                <Card className="text-center">
+                  <CardContent className="pt-6">
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                      <Briefcase className="w-6 h-6 text-primary" />
+                    </div>
+                    <h4 className="font-semibold mb-2">Current Position</h4>
+                    <p className="text-muted-foreground">{profileData.current_position}</p>
+                    {profileData?.current_company && (
+                      <p className="text-sm text-muted-foreground mt-1">at {profileData.current_company}</p>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+              {profileData?.years_experience && (
+                <Card className="text-center">
+                  <CardContent className="pt-6">
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                      <TrendingUp className="w-6 h-6 text-primary" />
+                    </div>
+                    <h4 className="font-semibold mb-2">Experience</h4>
+                    <p className="text-muted-foreground">{profileData.years_experience}</p>
+                  </CardContent>
+                </Card>
+              )}
+              {profileData?.education && (
+                <Card className="text-center">
+                  <CardContent className="pt-6">
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                      <GraduationCap className="w-6 h-6 text-primary" />
+                    </div>
+                    <h4 className="font-semibold mb-2">Education</h4>
+                    <p className="text-muted-foreground text-sm">{profileData.education}</p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </div>
-        </div> */}
+        )}
+
+        {profileData?.certifications && (
+          <div className="text-center">
+            <div className="max-w-4xl mx-auto">
+              <h3 className="text-2xl font-semibold mb-6 flex items-center justify-center gap-2">
+                <Award className="w-6 h-6 text-primary" />
+                Certifications
+              </h3>
+              <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                {profileData.certifications}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

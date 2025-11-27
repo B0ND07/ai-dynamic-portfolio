@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { ArrowDown, Github, Linkedin, Mail } from "lucide-react";
+import { ArrowDown, Github, Linkedin, Mail, Globe, Phone, MapPin, Twitter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { authService } from "@/lib/api";
 
@@ -12,7 +12,10 @@ interface ProfileData {
   bio: string;
   github_url: string;
   linkedin_url: string;
+  twitter_url: string;
+  website_url: string;
   email: string;
+  avatar_url: string;
   cv_url: string;
 }
 
@@ -20,9 +23,12 @@ const defaultProfileData: ProfileData = {
   full_name: "John Doe",
   title: "Full-Stack Developer & Creative Problem Solver",
   bio: "I create beautiful, functional web applications that solve real-world problems. Passionate about clean code, user experience, and cutting-edge technologies.",
-  github_url: "https://github.com",
-  linkedin_url: "https://linkedin.com",
-  email: "contact@example.com",
+  github_url: "",
+  linkedin_url: "",
+  twitter_url: "",
+  website_url: "",
+  email: "",
+  avatar_url: "",
   cv_url: ""
 };
 
@@ -50,7 +56,10 @@ const Hero = () => {
         bio: data.bio || defaultProfileData.bio,
         github_url: data.github_url || defaultProfileData.github_url,
         linkedin_url: data.linkedin_url || defaultProfileData.linkedin_url,
+        twitter_url: data.twitter_url || defaultProfileData.twitter_url,
+        website_url: data.website_url || defaultProfileData.website_url,
         email: data.email || defaultProfileData.email,
+        avatar_url: data.avatar_url || defaultProfileData.avatar_url,
         cv_url: data.cv_url || defaultProfileData.cv_url
       });
     } catch (error) {
@@ -148,6 +157,28 @@ const Hero = () => {
                 aria-label="LinkedIn Profile"
               >
                 <Linkedin className="w-6 h-6" />
+              </a>
+            )}
+            {profileData.twitter_url && (
+              <a
+                href={profileData.twitter_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3 rounded-full bg-muted hover:bg-muted/80 hover:scale-110 transition-all duration-200"
+                aria-label="Twitter Profile"
+              >
+                <Twitter className="w-6 h-6" />
+              </a>
+            )}
+            {profileData.website_url && (
+              <a
+                href={profileData.website_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3 rounded-full bg-muted hover:bg-muted/80 hover:scale-110 transition-all duration-200"
+                aria-label="Personal Website"
+              >
+                <Globe className="w-6 h-6" />
               </a>
             )}
             {profileData.email && (

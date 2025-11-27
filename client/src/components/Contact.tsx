@@ -1,22 +1,48 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { contactService } from "@/lib/api";
+import { contactService, authService } from "@/lib/api";
+
+interface ProfileData {
+  email: string;
+  phone: string;
+  location: string;
+}
 
 const Contact = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     subject: "",
     message: ""
   });
+
+  useEffect(() => {
+    fetchProfileData();
+  }, []);
+
+  const fetchProfileData = async () => {
+    try {
+      const data = await authService.getProfile();
+      if (data) {
+        setProfileData({
+          email: data.email || "",
+          phone: data.phone || "",
+          location: data.location || ""
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching profile data:', error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,22 +79,22 @@ const Contact = () => {
     {
       icon: Mail,
       title: "Email",
-      value: "hello@johndoe.com",
-      link: "mailto:hello@johndoe.com"
+      value: profileData?.email || "hello@johndoe.com",
+      link: profileData?.email ? `mailto:${profileData.email}` : "mailto:hello@johndoe.com"
     },
     {
       icon: Phone,
       title: "Phone",
-      value: "+1 (555) 123-4567",
-      link: "tel:+15551234567"
+      value: profileData?.phone || "+1 (555) 123-4567",
+      link: profileData?.phone ? `tel:${profileData.phone.replace(/\s/g, '')}` : "tel:+15551234567"
     },
     {
       icon: MapPin,
       title: "Location",
-      value: "San Francisco, CA",
+      value: profileData?.location || "San Francisco, CA",
       link: null
     }
-  ];
+  ].filter(info => info.value && info.value !== ""); // Only show fields that have values
 
   return (
     <section id="contact" className="py-20 bg-muted/30">
