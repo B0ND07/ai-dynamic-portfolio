@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("#home");
   const location = useLocation();
   const { isAuthenticated } = useAuth();
 
@@ -18,10 +19,30 @@ const Navigation = () => {
     { name: "Contact", path: "#contact" },
   ];
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = navItems.map(item => item.path.substring(1));
+      const scrollPosition = window.scrollY + 100; 
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = document.getElementById(sections[i]);
+        if (section && section.offsetTop <= scrollPosition) {
+          setActiveSection(`#${sections[i]}`);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const isActive = (path: string) => {
-    // For hash links, check if we're on the home page
-    if (path.startsWith('#')) {
-      return location.pathname === '/' && location.hash === path;
+    // For hash links on home page, check active section from scroll
+    if (path.startsWith('#') && location.pathname === '/') {
+      return activeSection === path;
     }
     return location.pathname === path;
   };

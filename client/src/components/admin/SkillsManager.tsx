@@ -147,7 +147,7 @@ const SkillsManager = ({ onClose, onSuccess }: SkillsManagerProps) => {
                 </Select>
               </div>
 
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label htmlFor="skill-proficiency">Proficiency: {newSkill.proficiency}%</Label>
                 <Slider
                   value={[newSkill.proficiency]}
@@ -156,7 +156,7 @@ const SkillsManager = ({ onClose, onSuccess }: SkillsManagerProps) => {
                   step={5}
                   className="mt-2"
                 />
-              </div>
+              </div> */}
             </div>
             <Button onClick={addSkill} disabled={isSubmitting || !newSkill.name || !newSkill.category}>
               <Plus className="w-4 h-4 mr-2" />
@@ -180,7 +180,7 @@ const SkillsManager = ({ onClose, onSuccess }: SkillsManagerProps) => {
                         <div className="flex-1">
                           <div className="flex items-center space-x-2">
                             <span className="font-medium">{skill.name}</span>
-                            <Badge variant="secondary">{skill.proficiency}%</Badge>
+                            {/* <Badge variant="secondary">{skill.proficiency}%</Badge> */}
                           </div>
                         </div>
                         <Button

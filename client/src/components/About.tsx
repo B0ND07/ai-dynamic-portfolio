@@ -123,7 +123,7 @@ const About = () => {
           <p className="text-lg text-muted-foreground max-w-4xl xl:max-w-6xl mx-auto text-justify">
             {aboutText}
           </p>
-          {(profileData?.location || profileData?.phone) && (
+          {/* {(profileData?.location || profileData?.phone) && (
             <div className="flex flex-wrap justify-center gap-4 mt-6 text-muted-foreground">
               {profileData?.location && (
                 <div className="flex items-center gap-2">
@@ -138,39 +138,13 @@ const About = () => {
                 </div>
               )}
             </div>
-          )}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {displaySkills.map((skill, index) => (
-            <Card key={index} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-2">
-              <CardHeader>
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <skill.icon className="w-6 h-6 text-primary" />
-                </div>
-                <CardTitle>{skill.title}</CardTitle>
-                <CardDescription>{skill.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {skill.items.map((item, itemIndex) => (
-                    <span
-                      key={itemIndex}
-                      className="px-3 py-1 bg-muted text-sm rounded-full hover:bg-muted/80 transition-colors"
-                    >
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          )} */}
         </div>
 
         {/* Professional Information */}
         {(profileData?.current_position || profileData?.current_company || profileData?.years_experience || profileData?.education) && (
           <div className="mb-16">
-            <h3 className="text-2xl font-semibold mb-8 text-center">Professional Background</h3>
+            {/* <h3 className="text-2xl font-semibold mb-8 text-center">Professional Background</h3> */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
               {profileData?.current_position && (
                 <Card className="text-center">
@@ -212,16 +186,69 @@ const About = () => {
           </div>
         )}
 
+        <h3 className="text-2xl font-semibold mb-8 text-center">Skills</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          {displaySkills.map((skill, index) => (
+            <Card key={index} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-2">
+              <CardHeader>
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                  <skill.icon className="w-6 h-6 text-primary" />
+                </div>
+                <CardTitle>{skill.title}</CardTitle>
+                <CardDescription>{skill.description}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {skill.items.map((item, itemIndex) => (
+                    <span
+                      key={itemIndex}
+                      className="px-3 py-1 bg-muted text-sm rounded-full hover:bg-muted/80 transition-colors"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        
+
         {profileData?.certifications && (
-          <div className="text-center">
-            <div className="max-w-4xl mx-auto">
-              <h3 className="text-2xl font-semibold mb-6 flex items-center justify-center gap-2">
-                <Award className="w-6 h-6 text-primary" />
-                Certifications
-              </h3>
-              <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                {profileData.certifications}
-              </p>
+          <div className="mb-16">
+            <h3 className="text-2xl font-semibold mb-8 text-center flex items-center justify-center gap-2">
+              <Award className="w-6 h-6 text-primary" />
+              Certifications
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {profileData.certifications.split('\n').filter(cert => cert.trim()).map((cert, index) => {
+                // Parse format: "Certification Name - URL" or just "Certification Name"
+                const parts = cert.split(' - ');
+                const certName = parts[0].trim();
+                const certUrl = parts[1]?.trim();
+                
+                return (
+                  <Card key={index} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-2">
+                    <CardContent className="pt-6">
+                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                        <Award className="w-6 h-6 text-primary" />
+                      </div>
+                      <h4 className="font-semibold mb-2 text-center">{certName}</h4>
+                      {certUrl && (
+                        <a 
+                          href={certUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline block text-center mt-2"
+                        >
+                          View Certificate
+                        </a>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         )}

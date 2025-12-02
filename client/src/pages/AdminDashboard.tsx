@@ -7,9 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { BarChart3, Users, Mail, FolderOpen, Plus, Edit, Trash2, LogOut, User, Award, Settings, FileText, Phone, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import ProjectForm from "@/components/ProjectForm";
-import ProfileEditor from "@/components/ProfileEditor";
-import SkillsManager from "@/components/SkillsManager";
+import ProjectForm from "@/components/admin/ProjectForm";
+import BasicInfoEditor from "@/components/admin/BasicInfoEditor";
+import SocialLinksEditor from "@/components/admin/SocialLinksEditor";
+import ProfessionalInfoEditor from "@/components/admin/ProfessionalInfoEditor";
+import CertificationsEditor from "@/components/admin/CertificationsEditor";
+import FooterSettingsEditor from "@/components/admin/FooterSettingsEditor";
+import SkillsManager from "@/components/admin/SkillsManager";
 import { projectService, contactService } from "@/lib/api";
 
 interface Project {
@@ -44,7 +48,11 @@ const AdminDashboard = () => {
   });
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [editingProject, setEditingProject] = useState<string | null>(null);
-  const [showProfileEditor, setShowProfileEditor] = useState(false);
+  const [showBasicInfoEditor, setShowBasicInfoEditor] = useState(false);
+  const [showSocialLinksEditor, setShowSocialLinksEditor] = useState(false);
+  const [showProfessionalInfoEditor, setShowProfessionalInfoEditor] = useState(false);
+  const [showCertificationsEditor, setShowCertificationsEditor] = useState(false);
+  const [showFooterSettingsEditor, setShowFooterSettingsEditor] = useState(false);
   const [showSkillsManager, setShowSkillsManager] = useState(false);
 
   // Redirect if not authenticated
@@ -214,7 +222,7 @@ const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Button onClick={() => setShowProfileEditor(true)} className="h-24 flex flex-col">
+              <Button onClick={() => setShowBasicInfoEditor(true)} className="h-24 flex flex-col">
                 <User className="w-8 h-8 mb-2" />
                 <span className="text-sm">Personal Info</span>
                 <span className="text-xs text-muted-foreground">Name, bio, contact</span>
@@ -360,17 +368,7 @@ const AdminDashboard = () => {
                       <p className="font-medium">Profile Information</p>
                       <p className="text-sm text-muted-foreground">Name, title, bio, avatar</p>
                     </div>
-                    <Button size="sm" onClick={() => setShowProfileEditor(true)}>
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  
-                  <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                    <div>
-                      <p className="font-medium">Contact Details</p>
-                      <p className="text-sm text-muted-foreground">Email, phone, location</p>
-                    </div>
-                    <Button size="sm" onClick={() => setShowProfileEditor(true)}>
+                    <Button size="sm" onClick={() => setShowBasicInfoEditor(true)}>
                       <Edit className="w-4 h-4" />
                     </Button>
                   </div>
@@ -378,9 +376,19 @@ const AdminDashboard = () => {
                   <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
                     <div>
                       <p className="font-medium">Professional Info</p>
-                      <p className="text-sm text-muted-foreground">Experience, education, CV</p>
+                      <p className="text-sm text-muted-foreground">Experience, education, position</p>
                     </div>
-                    <Button size="sm" onClick={() => setShowProfileEditor(true)}>
+                    <Button size="sm" onClick={() => setShowProfessionalInfoEditor(true)}>
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  
+                    <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
+                    <div>
+                      <p className="font-medium">Social Links</p>
+                      <p className="text-sm text-muted-foreground">GitHub, LinkedIn, Twitter, CV</p>
+                    </div>
+                    <Button size="sm" onClick={() => setShowSocialLinksEditor(true)}>
                       <Edit className="w-4 h-4" />
                     </Button>
                   </div>
@@ -405,26 +413,26 @@ const AdminDashboard = () => {
                       <Edit className="w-4 h-4" />
                     </Button>
                   </div>
+
+                    <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
+                    <div>
+                      <p className="font-medium">Certifications</p>
+                      <p className="text-sm text-muted-foreground">Professional credentials</p>
+                    </div>
+                    <Button size="sm" onClick={() => setShowCertificationsEditor(true)}>
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                  </div>
                   
                   <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
                     <div>
                       <p className="font-medium">Footer Content</p>
-                      <p className="text-sm text-muted-foreground">Managed through profile settings</p>
+                      <p className="text-sm text-muted-foreground">Description, services, links</p>
                     </div>
-                    <Button size="sm" onClick={() => setShowProfileEditor(true)}>
+                    <Button size="sm" onClick={() => setShowFooterSettingsEditor(true)}>
                       <Edit className="w-4 h-4" />
                     </Button>
-                  </div>
-                  
-                  <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                    <div>
-                      <p className="font-medium">Social Links</p>
-                      <p className="text-sm text-muted-foreground">GitHub, LinkedIn, Twitter</p>
-                    </div>
-                    <Button size="sm" onClick={() => setShowProfileEditor(true)}>
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                  </div>
+                  </div>     
                 </CardContent>
               </Card>
             </div>
@@ -449,10 +457,38 @@ const AdminDashboard = () => {
         />
       )}
 
-      {showProfileEditor && (
-        <ProfileEditor
-          onClose={() => setShowProfileEditor(false)}
-          onSuccess={() => setShowProfileEditor(false)}
+      {showBasicInfoEditor && (
+        <BasicInfoEditor
+          onClose={() => setShowBasicInfoEditor(false)}
+          onSuccess={() => setShowBasicInfoEditor(false)}
+        />
+      )}
+
+      {showSocialLinksEditor && (
+        <SocialLinksEditor
+          onClose={() => setShowSocialLinksEditor(false)}
+          onSuccess={() => setShowSocialLinksEditor(false)}
+        />
+      )}
+
+      {showProfessionalInfoEditor && (
+        <ProfessionalInfoEditor
+          onClose={() => setShowProfessionalInfoEditor(false)}
+          onSuccess={() => setShowProfessionalInfoEditor(false)}
+        />
+      )}
+
+      {showCertificationsEditor && (
+        <CertificationsEditor
+          onClose={() => setShowCertificationsEditor(false)}
+          onSuccess={() => setShowCertificationsEditor(false)}
+        />
+      )}
+
+      {showFooterSettingsEditor && (
+        <FooterSettingsEditor
+          onClose={() => setShowFooterSettingsEditor(false)}
+          onSuccess={() => setShowFooterSettingsEditor(false)}
         />
       )}
 

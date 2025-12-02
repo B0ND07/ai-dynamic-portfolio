@@ -91,6 +91,7 @@ const Footer = () => {
         return { name: trimmed, href: `#${href}` };
       })
     : [
+        {name: "Home", href: "#home" },
         { name: "About", href: "#about" },
         { name: "Projects", href: "#projects" },
         { name: "Contact", href: "#contact" }
@@ -202,8 +203,11 @@ const Footer = () => {
 
         <div className="border-t mt-12 pt-8 text-center">
           <p className="text-muted-foreground flex items-center justify-center">
-            {footerData.copyright_text || `Made with ❤️ by ${footerData.full_name}`}
-            <span className="mx-2">•</span>
+            {footerData.copyright_text } 
+            {/* Made with ❤️ by ${footerData.full_name} */}
+            {footerData.copyright_text && (
+              <span className="mx-2">•</span>
+            )}
             © {new Date().getFullYear()} All rights reserved
           </p>
         </div>
