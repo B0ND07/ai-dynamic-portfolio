@@ -12,6 +12,10 @@ from .serializers import (
     ProfileSerializer,
     ContactMessageSerializer,
 )
+import google.generativeai as genai
+from django.conf import settings
+import requests
+import re
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -127,26 +131,25 @@ class ProjectListView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProjectDetailView(APIView):
+    permission_classes = [AllowAny]
     
-    def delete(self, request):
-        if not request.user.is_authenticated:
-            return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
-        
-        id = request.data.get('id')
+    def get(self, request, pk):
         try:
-            project = Project.objects.get(id=id)
-            project.delete()
-            return Response({'message': f'project deleted {id}'}, status=status.HTTP_200_OK)
+            project = Project.objects.get(id=pk)
+            serializer = ProjectSerializer(project, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
         except Project.DoesNotExist:
             return Response({'error': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
     
-    def put(self, request):
+    def put(self, request, pk):
         if not request.user.is_authenticated:
             return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
         
-        project_id = request.data.get('id')
         try:
-            project = Project.objects.get(id=project_id)
+            project = Project.objects.get(id=pk)
         except Project.DoesNotExist:
             return Response({'error': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
         
@@ -155,6 +158,17 @@ class ProjectListView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk):
+        if not request.user.is_authenticated:
+            return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        try:
+            project = Project.objects.get(id=pk)
+            project.delete()
+            return Response({'message': f'Project {pk} deleted'}, status=status.HTTP_200_OK)
+        except Project.DoesNotExist:
+            return Response({'error': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class SkillListView(APIView):
@@ -241,4 +255,107 @@ class ContactMessageView(APIView):
             message.delete()
             return Response({'message': f'Contact message {id} deleted'}, status=status.HTTP_200_OK)
         except ContactMessage.DoesNotExist:
-            return Response({'error': 'Contact message not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class AIGenerateProjectDescriptionView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def fetch_github_info(self, github_url):
+        """Fetch README and repo info from GitHub URL"""
+        try:
+            # Extract owner and repo from URL
+            match = re.match(r'https?://github\.com/([^/]+)/([^/]+)/?', github_url)
+            if not match:
+                return None
+            
+            owner, repo = match.groups()
+            repo = repo.rstrip('/')
+            
+            # Fetch README via GitHub API
+            readme_url = f'https://api.github.com/repos/{owner}/{repo}/readme'
+            headers = {'Accept': 'application/vnd.github.v3.raw'}
+            
+            readme_response = requests.get(readme_url, headers=headers, timeout=10)
+            readme_content = readme_response.text if readme_response.status_code == 200 else ''
+            
+            # Fetch repo info
+            repo_url = f'https://api.github.com/repos/{owner}/{repo}'
+            repo_response = requests.get(repo_url, timeout=10)
+            repo_data = repo_response.json() if repo_response.status_code == 200 else {}
+            
+            return {
+                'readme': readme_content[:3000],  # Limit to 3000 chars
+                'description': repo_data.get('description', ''),
+                'language': repo_data.get('language', ''),
+                'topics': repo_data.get('topics', [])
+            }
+        except Exception as e:
+            print(f"Error fetching GitHub info: {str(e)}")
+            return None
+    
+    def post(self, request):
+        title = request.data.get('title', '')
+        technologies = request.data.get('technologies', [])
+        github_url = request.data.get('github_url', '')
+        
+        if not title:
+            return Response({'error': 'Title is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            # Configure Gemini
+            if not settings.GEMINI_API_KEY:
+                return Response({'error': 'Gemini API key not configured'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            genai.configure(api_key=settings.GEMINI_API_KEY)
+            model = genai.GenerativeModel('gemini-2.5-flash')
+            
+            # Fetch GitHub info if URL provided
+            github_info = None
+            if github_url and 'github.com' in github_url:
+                github_info = self.fetch_github_info(github_url)
+            
+            tech_list = ', '.join(technologies) if technologies else 'various technologies'
+            
+            prompt = f"""Write a professional and compelling project description for a portfolio website.
+
+            Project Title: {title}
+            Technologies Used: {tech_list}"""
+
+            if github_info:
+                prompt += f"\n\nGitHub Repository Information:"
+                if github_info.get('description'):
+                    prompt += f"\nRepository Description: {github_info['description']}"
+                if github_info.get('language'):
+                    prompt += f"\nPrimary Language: {github_info['language']}"
+                if github_info.get('topics'):
+                    prompt += f"\nTopics: {', '.join(github_info['topics'])}"
+                if github_info.get('readme'):
+                    prompt += f"\n\nREADME Content (excerpt):\n{github_info['readme']}"
+
+            prompt += """
+
+            Requirements:
+            - Write 2-3 concise paragraphs (150-200 words total)
+            - Focus on the project's purpose, key features, and technical implementation
+            - Highlight the impact or value it provides
+            - Use professional but engaging language
+            - Make it suitable for a developer portfolio
+            - Don't use markdown formatting
+            - If GitHub information is provided, incorporate relevant details naturally
+
+            Write the description now:"""
+            
+            # Generate description
+            response = model.generate_content(prompt)
+            description = response.text.strip()
+            
+            return Response({
+                'description': description,
+                'message': 'Description generated successfully',
+                'used_github_info': github_info is not None
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            return Response({
+                'error': f'Failed to generate description: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

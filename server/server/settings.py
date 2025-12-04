@@ -1,5 +1,9 @@
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -11,6 +15,9 @@ SECRET_KEY = 'django-insecure-)_8$)zzvd0&4ras@u1a(fx-lvv3d2bd%db9^gue5n5ddt+dn(c
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+# Google Gemini API Key
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
 
 
 # Application definition

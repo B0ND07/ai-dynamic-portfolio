@@ -5,8 +5,10 @@ from .views import (
     LogoutView, 
     ProfileView, 
     ProjectListView,
+    ProjectDetailView,
     SkillListView,
     ContactMessageView,
+    AIGenerateProjectDescriptionView,
 )
 
 urlpatterns = [
@@ -18,10 +20,14 @@ urlpatterns = [
     
     # Project endpoints
     path('projects/', ProjectListView.as_view(), name='project-list'),
+    path('projects/<uuid:pk>/', ProjectDetailView.as_view(), name='project-detail'),
     
     # Skill endpoints
     path('skills/', SkillListView.as_view(), name='skill-list'),
     
     # Contact endpoints
     path('contact/', ContactMessageView.as_view(), name='contact'),
+    
+    # AI endpoints
+    path('ai/generate-project-description/', AIGenerateProjectDescriptionView.as_view(), name='ai-generate-description'),
 ]

@@ -147,7 +147,7 @@ const About = () => {
             {/* <h3 className="text-2xl font-semibold mb-8 text-center">Professional Background</h3> */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
               {profileData?.current_position && (
-                <Card className="text-center">
+                <Card className="text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-2">
                   <CardContent className="pt-6">
                     <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 mx-auto">
                       <Briefcase className="w-6 h-6 text-primary" />
@@ -156,12 +156,12 @@ const About = () => {
                     <p className="text-muted-foreground">{profileData.current_position}</p>
                     {profileData?.current_company && (
                       <p className="text-sm text-muted-foreground mt-1">at {profileData.current_company}</p>
-                    )}
+                            )}
                   </CardContent>
                 </Card>
               )}
               {profileData?.years_experience && (
-                <Card className="text-center">
+                <Card className="text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-2">
                   <CardContent className="pt-6">
                     <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 mx-auto">
                       <TrendingUp className="w-6 h-6 text-primary" />
@@ -172,7 +172,7 @@ const About = () => {
                 </Card>
               )}
               {profileData?.education && (
-                <Card className="text-center">
+                <Card className="text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-2">
                   <CardContent className="pt-6">
                     <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 mx-auto">
                       <GraduationCap className="w-6 h-6 text-primary" />
@@ -187,15 +187,15 @@ const About = () => {
         )}
 
         <h3 className="text-2xl font-semibold mb-8 text-center">Skills</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto mb-16">
           {displaySkills.map((skill, index) => (
             <Card key={index} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-2">
               <CardHeader>
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <skill.icon className="w-6 h-6 text-primary" />
                 </div>
-                <CardTitle>{skill.title}</CardTitle>
-                <CardDescription>{skill.description}</CardDescription>
+                <CardTitle className="text-xl">{skill.title}</CardTitle>
+                {/* <CardDescription>{skill.description}</CardDescription> */}
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
@@ -213,15 +213,13 @@ const About = () => {
           ))}
         </div>
 
-        
-
         {profileData?.certifications && (
           <div className="mb-16">
             <h3 className="text-2xl font-semibold mb-8 text-center flex items-center justify-center gap-2">
               <Award className="w-6 h-6 text-primary" />
               Certifications
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto mb-16">
               {profileData.certifications.split('\n').filter(cert => cert.trim()).map((cert, index) => {
                 // Parse format: "Certification Name - URL" or just "Certification Name"
                 const parts = cert.split(' - ');

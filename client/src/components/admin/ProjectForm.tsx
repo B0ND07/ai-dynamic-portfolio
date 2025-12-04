@@ -9,8 +9,8 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { Upload, X } from "lucide-react";
-import { projectService } from "@/lib/api";
+import { Upload, X, Sparkles } from "lucide-react";
+import { projectService, aiService } from "@/lib/api";
 
 interface ProjectFormProps {
   projectId?: string | null;
@@ -22,6 +22,7 @@ const ProjectForm = ({ projectId, onClose, onSuccess }: ProjectFormProps) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -132,6 +133,47 @@ const ProjectForm = ({ projectId, onClose, onSuccess }: ProjectFormProps) => {
     }));
   };
 
+  const handleGenerateDescription = async () => {
+    if (!formData.title) {
+      toast({
+        title: "Title Required",
+        description: "Please enter a project title first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const technologies = formData.technologies
+        .split(",")
+        .map(t => t.trim())
+        .filter(Boolean);
+
+      const response = await aiService.generateProjectDescription(
+        formData.title, 
+        technologies,
+        formData.github_url
+      );
+      
+      handleChange("description", response.description);
+      
+      toast({
+        title: "Description Generated! ✨",
+         description: "AI has generated a description for your project.",
+      });
+    } catch (error: any) {
+      console.error('Error generating description:', error);
+      toast({
+        title: "Generation Failed",
+        description: error.message || "Failed to generate description. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -169,12 +211,26 @@ const ProjectForm = ({ projectId, onClose, onSuccess }: ProjectFormProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="description">Description</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleGenerateDescription}
+                disabled={isGenerating || !formData.title}
+                className="gap-2"
+              >
+                <Sparkles className="w-4 h-4" />
+                {isGenerating ? "Generating..." : "Generate with AI"}
+              </Button>
+            </div>
             <Textarea
               id="description"
-              rows={3}
+              rows={5}
               value={formData.description}
               onChange={(e) => handleChange("description", e.target.value)}
+              placeholder="Enter project description or click 'Generate with AI' to create one automatically..."
             />
           </div>
 

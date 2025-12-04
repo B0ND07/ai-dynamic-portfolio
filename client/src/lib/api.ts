@@ -177,3 +177,12 @@ export const contactService = {
   submit: (data: any) => api.post('/api/contact/', data),
   list: () => api.get<any[]>('/api/contact/'),
 };
+
+export const aiService = {
+  generateProjectDescription: (title: string, technologies: string[], github_url?: string) => 
+    api.post<{ description: string; message: string; used_github_info: boolean }>('/api/ai/generate-project-description/', { 
+      title, 
+      technologies,
+      github_url: github_url || ''
+    }),
+};
