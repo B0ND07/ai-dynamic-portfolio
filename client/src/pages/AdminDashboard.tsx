@@ -14,6 +14,7 @@ import ProfessionalInfoEditor from "@/components/admin/ProfessionalInfoEditor";
 import CertificationsEditor from "@/components/admin/CertificationsEditor";
 import FooterSettingsEditor from "@/components/admin/FooterSettingsEditor";
 import SkillsManager from "@/components/admin/SkillsManager";
+import ResumeManager from "@/components/admin/ResumeManager";
 import { projectService, contactService } from "@/lib/api";
 
 interface Project {
@@ -248,6 +249,7 @@ const AdminDashboard = () => {
           <TabsList>
             <TabsTrigger value="projects">Projects</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
+            <TabsTrigger value="resumes">Resumes</TabsTrigger>
             <TabsTrigger value="content">Content Overview</TabsTrigger>
           </TabsList>
 
@@ -349,6 +351,11 @@ const AdminDashboard = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Resumes Tab */}
+          <TabsContent value="resumes" className="space-y-6">
+            <ResumeManager />
           </TabsContent>
 
           {/* Content Overview Tab */}

@@ -112,3 +112,39 @@ class ContactMessage(models.Model):
     def __str__(self):
         return f"{self.name} - {self.subject}"
 
+
+class Resume(models.Model):
+    FORMAT_CHOICES = [
+        ('markdown', 'Markdown'),
+        ('plain', 'Plain Text'),
+    ]
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='resumes')
+    title = models.TextField()
+    target_role = models.TextField()
+    
+    name = models.TextField(blank=True, null=True)
+    phone = models.TextField(blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    linkedin = models.TextField(blank=True, null=True)
+    github = models.TextField(blank=True, null=True)
+    
+    technologies = ArrayField(models.TextField(), default=list, blank=True)
+    projects_data = models.JSONField(default=list, blank=True)
+    experience_data = models.JSONField(default=list, blank=True)
+    education_data = models.JSONField(default=list, blank=True)
+    skills_data = models.JSONField(default=list, blank=True)
+    certifications_data = models.JSONField(default=list, blank=True)
+    summary = models.TextField(blank=True, null=True)
+    generated_content = models.TextField(blank=True, null=True)  # AI-generated resume
+    format = models.CharField(max_length=20, choices=FORMAT_CHOICES, default='markdown')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'resumes'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.title} - {self.target_role}"

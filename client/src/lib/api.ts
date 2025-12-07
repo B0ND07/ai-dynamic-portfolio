@@ -185,4 +185,14 @@ export const aiService = {
       technologies,
       github_url: github_url || ''
     }),
+  generateResume: (data: any) => 
+    api.post<{ generated_content: string; message: string }>('/api/ai/generate-resume/', data),
+};
+
+export const resumeService = {
+  list: () => api.get<any[]>('/api/resumes/'),
+  get: (id: string) => api.get<any>(`/api/resumes/${id}/`),
+  create: (data: any) => api.post('/api/resumes/', data),
+  update: (id: string, data: any) => api.put(`/api/resumes/${id}/`, data),
+  delete: (id: string) => api.delete(`/api/resumes/${id}/`),
 };

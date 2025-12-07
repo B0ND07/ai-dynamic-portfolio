@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from .models import Project, Skill, Profile, ContactMessage
+from .models import Project, Skill, Profile, ContactMessage, Resume
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -112,3 +112,32 @@ class ContactMessageSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'email', 'subject', 'message', 'read', 'created_at')
         read_only_fields = ('id', 'read', 'created_at')
 
+
+class ResumeSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    
+    class Meta:
+        model = Resume
+        fields = (
+            'id',
+            'username',
+            'title',
+            'target_role',
+            'name',
+            'phone',
+            'email',
+            'linkedin',
+            'github',
+            'technologies',
+            'projects_data',
+            'experience_data',
+            'education_data',
+            'skills_data',
+            'certifications_data',
+            'summary',
+            'generated_content',
+            'format',
+            'created_at',
+            'updated_at',
+        )
+        read_only_fields = ('id', 'username', 'created_at', 'updated_at')

@@ -9,6 +9,9 @@ from .views import (
     SkillListView,
     ContactMessageView,
     AIGenerateProjectDescriptionView,
+    ResumeListView,
+    ResumeDetailView,
+    AIGenerateResumeView,
 )
 
 urlpatterns = [
@@ -30,4 +33,9 @@ urlpatterns = [
     
     # AI endpoints
     path('ai/generate-project-description/', AIGenerateProjectDescriptionView.as_view(), name='ai-generate-description'),
+    path('ai/generate-resume/', AIGenerateResumeView.as_view(), name='ai-generate-resume'),
+    
+    # Resume endpoints
+    path('resumes/', ResumeListView.as_view(), name='resume-list'),
+    path('resumes/<uuid:pk>/', ResumeDetailView.as_view(), name='resume-detail'),
 ]
