@@ -6,6 +6,11 @@ import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
+    '/api': {
+        target: 'http://107.173.84.15:8081',
+        changeOrigin: true,
+        rewrite: (path: string) => path.replace(/^\/api/, '')
+      },
     host: "::",
     port: 8080,
   },
