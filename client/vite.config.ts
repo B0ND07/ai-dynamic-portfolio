@@ -9,7 +9,6 @@ export default defineConfig(({ mode }) => ({
       '/api': {
         target: 'http://107.173.84.15:8081',
         changeOrigin: true,
-        rewrite: (path: string) => path.replace(/^\/api/, '')
       }
     },
     host: "::",
