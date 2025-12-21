@@ -17,6 +17,7 @@ __pycache__/
 .env.test
 .env.production
 .env.local
+staticfiles/
 
 # Database
 *.sqlite3
