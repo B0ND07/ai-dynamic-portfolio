@@ -13,7 +13,7 @@ from .serializers import (
     ContactMessageSerializer,
     ResumeSerializer,
 )
-import google.generativeai as genai
+from google import genai
 from django.conf import settings
 import requests
 import re
@@ -307,8 +307,8 @@ class AIGenerateProjectDescriptionView(APIView):
             if not settings.GEMINI_API_KEY:
                 return Response({'error': 'Gemini API key not configured'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
-            genai.configure(api_key=settings.GEMINI_API_KEY)
-            model = genai.GenerativeModel('gemini-2.5-flash')
+            client = genai.Client(api_key=settings.GEMINI_API_KEY)
+            model = 'gemini-2.5-flash'
             
             # Fetch GitHub info if URL provided
             github_info = None
@@ -347,7 +347,10 @@ class AIGenerateProjectDescriptionView(APIView):
             Write the description now:"""
             
             # Generate description
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(
+                model=model,
+                contents=prompt
+            )
             description = response.text.strip()
             
             return Response({
@@ -433,8 +436,8 @@ class AIGenerateResumeView(APIView):
             if not settings.GEMINI_API_KEY:
                 return Response({'error': 'Gemini API key not configured'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
-            genai.configure(api_key=settings.GEMINI_API_KEY)
-            model = genai.GenerativeModel('gemini-2.5-flash')
+            client = genai.Client(api_key=settings.GEMINI_API_KEY)
+            model = 'gemini-2.5-flash'
             
             # Get user profile for contact info
             profile = Profile.objects.filter(user=request.user).first()
@@ -566,17 +569,27 @@ ATS OPTIMIZATION:
             if summary:
                 prompt += f"\nUse this for PROFESSIONAL SUMMARY section (place after heading, before EDUCATION):\n{summary}\n"
 
+            if format_type == 'markdown':
+                format_req = """- Use ONLY Markdown syntax: headers (##), bold (**text**), bullet points (-)
+- DO NOT use HTML tags like <div>, <center>, <b>, or any HTML
+- DO NOT mix HTML with Markdown"""
+            else:
+                format_req = """- Use plain text with clear section separators (===), bullet points (•)
+- DO NOT use HTML tags"""
+
+            job_desc_req = "- IMPORTANT: Incorporate relevant keywords and requirements from the provided job description" if job_description else ""
+
             prompt += f"""
 
 FORMAT REQUIREMENTS for {format_type}:
-{'- Use Markdown headers (##), bold (**text**), bullet points (-)' if format_type == 'markdown' else '- Use plain text with clear section separators (===), bullet points (•)'}
+{format_req}
 
 CONTENT REQUIREMENTS:
 - Tailor ALL content specifically for {target_role} position
 - Use industry-standard action verbs (Developed, Implemented, Designed, Architected, Led, etc.)
 - Quantify achievements with metrics (%, numbers, scale) where possible
 - Make it ATS-friendly: use keywords from job description for {target_role}
-{f'- IMPORTANT: Incorporate relevant keywords and requirements from the provided job description' if job_description else ''}
+{job_desc_req}
 - Keep bullet points concise (1-2 lines each)
 - Ensure content fits 1-2 pages
 - Maintain professional, confident tone
@@ -584,8 +597,15 @@ CONTENT REQUIREMENTS:
 
 Generate the COMPLETE resume now following the professional template structure exactly:"""
             
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(
+                model=model,
+                contents=prompt
+            )
             generated_resume = response.text.strip()
+            
+            # Remove any HTML tags if present
+            import re
+            generated_resume = re.sub(r'<[^>]+>', '', generated_resume)
             
             return Response({
                 'generated_content': generated_resume,
