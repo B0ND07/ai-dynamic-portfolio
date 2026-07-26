@@ -74,7 +74,13 @@ const Projects = () => {
             <p className="text-muted-foreground">No projects to display yet.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className={`grid grid-cols-1 ${
+            projects.length === 1 
+              ? 'max-w-md mx-auto' 
+              : projects.length === 2 
+                ? 'md:grid-cols-2 max-w-3xl mx-auto' 
+                : 'md:grid-cols-2 lg:grid-cols-3'
+          } gap-8`}>
             {projects.map((project) => (
               <Card key={project.id} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-2 group">
                 {project.image_url && (
